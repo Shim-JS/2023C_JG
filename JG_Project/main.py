@@ -17,7 +17,7 @@ import joblib
 # 현재 날짜 출력
 import datetime
 st.header(f'현재날짜 : {datetime.datetime.now().date()}')
-tab1, tab2, tab3 = st.tabs(['지난주 지지율', '다음 지지율 예측', '지지율 검색'])
+tab1, tab2, tab3, tab4 = st.tabs(['지난주 지지율', '다음 지지율 예측(건수)','다음 지지율 예측(%)', '지지율 검색'])
 
 #--------------------------------------------------------
 with tab1:
@@ -200,12 +200,39 @@ with tab2:
         model_rf = joblib.load('model/rf_model.pkl')
 
 
-        model_list = [model_svm, model_ebm, model_lgbm, model_lr, model_rf]
-
+        model_num = 0
+        model_list = [model_lr, model_lgbm, model_rf, model_ebm, model_svm]
+        
+        model_nm_list = [
+            "예측 성능 1위. Linear Regressor Model",
+            "예측 성능 2위. LightGBM Regressor Model",
+            "예측 성능 3위. RandomForest Regressor Model",
+            "예측 성능 4위. ExplainableBoosting Regressor Model",
+            "예측 성능 5위. SVM Regressor Model"
+        ]
+        
+        model_error_list = [
+            "약 +- 2.0566 정도의 오차가 있습니다.",
+            "약 +- 2.1920 정도의 오차가 있습니다.",
+            "약 +- 2.3906 정도의 오차가 있습니다.",
+            "약 +- 2.7810 정도의 오차가 있습니다.",
+            "약 +- 7.751 정도의 오차가 있습니다."
+        ]
         select_model = st.selectbox(
         '원하는 예측 모델을 고르세요.',
-        model_list
+        model_nm_list
          )
+        
+        if select_model == model_nm_list[0]:
+            model_num = 0
+        elif select_model == model_nm_list[1]:
+            model_num = 1
+        elif select_model == model_nm_list[2]:
+            model_num = 2
+        elif select_model == model_nm_list[3]:
+            model_num = 3
+        elif select_model == model_nm_list[4]:
+            model_num = 4
         
         st.divider()
         
@@ -314,7 +341,7 @@ with tab2:
 
             write_df_new.loc[0,'과학_IT%'] = (write_science/sum_news) *100
             write_df_new.loc[0,'경제%'] = (write_economic/sum_news) *100
-            write_df_new.loc[0,'국제%'] = (write_global/sum_news*100) *100
+            write_df_new.loc[0,'국제%'] = (write_global/sum_news) *100
             write_df_new.loc[0,'북한_외교%'] = (write_north_korea/sum_news) *100
             write_df_new.loc[0,'문화%'] = (write_culture/sum_news) *100
             write_df_new.loc[0,'사회%'] = (write_social/sum_news) *100
@@ -348,13 +375,209 @@ with tab2:
             
             st.table(X_test)
             
-            pred_score = select_model.predict(X_test)
+            pred_score = model_list[model_num].predict(X_test)
             
-            st.subheader(f"_다음 긍정 지지율 예측값은_ :blue[{pred_score}%]: 입니다. 😄")
+            st.subheader(f"_다음 긍정 지지율 예측값은_ :blue[{pred_score}%] 입니다. 😄   (:red[{model_error_list[model_num]}])")
+            
+            
+with tab3:
+    with st.container():
+        
+        st.subheader(f"1. 모델 선택")
+        ## 모델 로드 5가지
+        model_svm = joblib.load('model/svm_model.pkl')
+        model_ebm = joblib.load('model/ebm_model.pkl')
+        model_lgbm = joblib.load('model/lgbm_model.pkl')
+        model_lr = joblib.load('model/lr_model.pkl')
+        model_rf = joblib.load('model/rf_model.pkl')
+
+        model_num = 0
+        model_list2 = [model_lr, model_lgbm, model_rf, model_ebm, model_svm]
+        
+        model_nm_list = [
+            "예측 성능 1위. Linear Regressor Model",
+            "예측 성능 2위. LightGBM Regressor Model",
+            "예측 성능 3위. RandomForest Regressor Model",
+            "예측 성능 4위. ExplainableBoosting Regressor Model",
+            "예측 성능 5위. SVM Regressor Model"
+        ]
+        
+        model_error_list = [
+            "약 +- 2.0566 정도의 오차가 있습니다.",
+            "약 +- 2.1920 정도의 오차가 있습니다.",
+            "약 +- 2.3906 정도의 오차가 있습니다.",
+            "약 +- 2.7810 정도의 오차가 있습니다.",
+            "약 +- 7.751 정도의 오차가 있습니다."
+        ]
+        select_model = st.selectbox(
+        '원하는 예측 모델을 고르세요!',
+        model_nm_list
+         )
+        
+        if select_model == model_nm_list[0]:
+            model_num = 0
+        elif select_model == model_nm_list[1]:
+            model_num = 1
+        elif select_model == model_nm_list[2]:
+            model_num = 2
+        elif select_model == model_nm_list[3]:
+            model_num = 3
+        elif select_model == model_nm_list[4]:
+            model_num = 4
+            
+            
+            
+        st.divider()
+        
+        st.subheader(f"2. 뉴스 데이터 (%) 입력")
+        data1, data2, data3, data4 = st.columns([0.25, 0.25, 0.25, 0.25])
+        
+        total_news = 11000
+        
+        with data1 :
+            write_science = st.number_input(
+                label = "과학_IT(%)",
+                value = 0.00,
+                placeholder = f"{int(past_science)/100}(%)",
+            )
+            
+            write_economic = st.number_input(
+                label = "경제(%)",
+                value = 0.00,
+                placeholder = f"{int(past_economic)/100}(%)",
+            )
+            
+            write_global = st.number_input(
+                label = "국제(%)",
+                value = 0.00,
+                placeholder = f"{int(past_global)/100}(%)",
+            )
+            
+        with data2 :
+            write_north_korea = st.number_input(
+                label = "북한_외교(%)",
+                value = 0.00,
+                placeholder = f"{int(past_north_korea)/100}(%)",
+            )
+            
+            write_culture = st.number_input(
+                label = "문화(%)",
+                value = 0.00,
+                placeholder = f"{int(past_culture)/100}(%)",
+            )
+            
+            write_social = st.number_input(
+                label = "사회(%)",
+                value = 0.00,
+                placeholder = f"{int(past_social)/100}(%)",
+            )
+            
+        with data3 :
+            write_issue = st.number_input(
+                label = "사건_사고(%)",
+                value = 0.00,
+                placeholder = f"{int(past_issue)/100}(%)",
+            )
+            
+            write_politic = st.number_input(
+                label = "정치(%)",
+                value = 0.00,
+                placeholder = f"{int(past_politic)/100}(%)",
+            )
+            
+            write_sports = st.number_input(
+                label = "스포츠(%)",
+                value = 0.00,
+                placeholder = f"{int(past_sports)/100}(%)",
+            )
+        
+        with data4 :        
+            write_local = st.number_input(
+                label = "지역(%)",
+                value = 0.00,
+                placeholder = f"{int(past_local)/100}(%)",
+            )
+            
+            write_etc = st.number_input(
+                label = "기타(날씨, 미분류)(%)",
+                value = 0.00,
+                placeholder = f"{int(past_etc)/100}(%)",
+            )
+            
+        ## 버튼 클릭
+        if st.button('**!지지율 예측 시작!**'):
+            st.divider()
+            st.subheader(f"3. 다음주 지지율 예측", divider='rainbow')
+            st.text("다음 지지율을 예측합니다.")
+            
+            ## ========================= 학습 데이터 구축========================= ##
+            write_df_past = pd.DataFrame(df.iloc[-1]).T.reset_index(drop = True)
+            write_df_new = pd.DataFrame(df.iloc[-1]).T.reset_index(drop = True).drop(["연도","월","주차", "긍정", "부정", "잘모름"], axis = 1)
+            
+            write_df_new.loc[0,'긍정_과거'] = write_df_past.loc[0,'긍정']
+            write_df_new.loc[0,'부정_과거'] = write_df_past.loc[0,'부정']
+            write_df_new.loc[0,'잘모름_과거'] = write_df_past.loc[0,'잘모름']
+            
+            write_df_new.loc[0,'과학_IT'] = write_science * total_news / 100
+            write_df_new.loc[0,'경제'] = write_economic * total_news / 100
+            write_df_new.loc[0,'국제'] = write_global * total_news / 100
+            write_df_new.loc[0,'북한_외교'] = write_north_korea * total_news / 100
+            write_df_new.loc[0,'문화'] = write_culture * total_news / 100
+            write_df_new.loc[0,'사회'] = write_social * total_news / 100
+            write_df_new.loc[0,'사건_사고'] = write_issue * total_news / 100
+            write_df_new.loc[0,'정치'] = write_politic * total_news / 100
+            write_df_new.loc[0,'스포츠'] = write_sports * total_news / 100
+            write_df_new.loc[0,'지역'] = write_local * total_news / 100
+            write_df_new.loc[0,'기타(날씨, 미분류)'] = write_etc * total_news / 100
+            sum_news = sum([write_science, write_economic, write_global, write_north_korea,
+              write_culture, write_social, write_issue, write_politic,
+              write_sports, write_local, write_etc])
+            write_df_new.loc[0,'주간합'] = sum_news * total_news / 100
+
+            write_df_new.loc[0,'과학_IT%'] = write_science
+            write_df_new.loc[0,'경제%'] = write_economic
+            write_df_new.loc[0,'국제%'] = write_global
+            write_df_new.loc[0,'북한_외교%'] = write_north_korea
+            write_df_new.loc[0,'문화%'] = write_culture
+            write_df_new.loc[0,'사회%'] = write_social
+            write_df_new.loc[0,'사건_사고%'] = write_issue
+            write_df_new.loc[0,'정치%'] = write_politic
+            write_df_new.loc[0,'스포츠%'] = write_sports
+            write_df_new.loc[0,'지역%'] = write_local
+            write_df_new.loc[0,'기타(날씨, 미분류)%'] = write_etc
+            
+            write_df_new.loc[0,'과학_IT_증감량'] = write_df_new.loc[0,'과학_IT'] - write_df_past.loc[0,'과학_IT']
+            write_df_new.loc[0,'경제_증감량'] = write_df_new.loc[0,'경제'] - write_df_past.loc[0,'경제']
+            write_df_new.loc[0,'국제_증감량'] = write_df_new.loc[0,'국제'] - write_df_past.loc[0,'국제']
+            write_df_new.loc[0,'북한_외교_증감량'] = write_df_new.loc[0,'북한_외교'] - write_df_past.loc[0,'북한_외교']
+            write_df_new.loc[0,'문화_증감량'] = write_df_new.loc[0,'문화'] - write_df_past.loc[0,'문화']
+            write_df_new.loc[0,'사회_증감량'] = write_df_new.loc[0,'사회'] - write_df_past.loc[0,'사회']
+            write_df_new.loc[0,'사건_사고_증감량'] = write_df_new.loc[0,'사건_사고'] - write_df_past.loc[0,'사건_사고']
+            write_df_new.loc[0,'정치_증감량'] = write_df_new.loc[0,'정치'] - write_df_past.loc[0,'정치']
+            write_df_new.loc[0,'스포츠_증감량'] = write_df_new.loc[0,'스포츠'] - write_df_past.loc[0,'스포츠']
+            write_df_new.loc[0,'지역_증감량'] = write_df_new.loc[0,'지역'] - write_df_past.loc[0,'지역']
+            write_df_new.loc[0,'기타(날씨, 미분류)_증감량'] = write_df_new.loc[0,'기타(날씨, 미분류)'] - write_df_past.loc[0,'기타(날씨, 미분류)']
+            
+            X_test = pd.DataFrame(write_df_new.loc[0,['긍정_과거', '부정_과거', '잘모름_과거','과학_IT', '경제', '국제', '북한_외교', '문화',
+       '사회', '사건_사고', '정치', '스포츠', '지역', '기타(날씨, 미분류)', '주간합', '과학_IT%', '경제%',
+       '국제%', '북한_외교%', '문화%', '사회%', '사건_사고%', '정치%', '스포츠%', '지역%', '기타(날씨, 미분류)%',
+         '과학_IT_증감량', '경제_증감량', '국제_증감량', '북한_외교_증감량', '문화_증감량', '사회_증감량', '사건_사고_증감량', '정치_증감량',
+       '스포츠_증감량', '지역_증감량', '기타(날씨, 미분류)_증감량']]).T
+            
+            ## ========================= 학습 데이터 구축========================= ##
+            
+            ## 예측 ##
+            
+            st.table(X_test)
+            X_test.to_csv("temp.csv",index = False, encoding = 'cp949')
+            
+            pred_score = model_list2[model_num].predict(X_test)
+            
+            st.subheader(f"_다음 긍정 지지율 예측값은_ :blue[{pred_score}%] 입니다. 😄   (:red[{model_error_list[model_num]}])")
 
             
 #--------------------------------------------------------
-with tab3:
+with tab4:
             # 1주전 지지율 확인
     #--------------------------------------------------------
     with st.container():
