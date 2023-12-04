@@ -66,27 +66,20 @@ X_test.columns = ["Positive_Past","Negative_Past","Non_Past","Science_IT","Ecnom
 y_test.columns = ['Target']
 
 from sklearn.linear_model import LinearRegression
-lr_model = LinearRegression(normalize=True)
+lr_model = LinearRegression()
 
 lr_model.fit(X_train,y_train)
 
 
 from sklearn import svm
 
-svm_model = svm.SVR(C=4.752, cache_size=200, coef0=0.0, degree=3, epsilon=1.3, gamma='scale',
-     kernel='rbf', shrinking=True, tol=0.001, verbose=False)
+svm_model = svm.SVR()
 
 svm_model.fit(X_train, y_train)
 
 from sklearn.ensemble import RandomForestRegressor
 
-rf_model = RandomForestRegressor(bootstrap=True, ccp_alpha=0.0, criterion='mae',
-                       max_depth=10, max_features=1.0, max_leaf_nodes=None,
-                       max_samples=None, min_impurity_decrease=0,
-                       min_impurity_split=None, min_samples_leaf=6,
-                       min_samples_split=7, min_weight_fraction_leaf=0.0,
-                       n_estimators=190, n_jobs=-1, oob_score=False,
-                       random_state=2023, verbose=0, warm_start=False)
+rf_model = RandomForestRegressor()
 rf_model.fit(X_train, y_train)
 
 
@@ -103,20 +96,13 @@ from lightgbm import LGBMRegressor
 #                silent='warn', subsample=1.0, subsample_for_bin=200000,
 #                subsample_freq=0)
 
-lgbm_model = LGBMRegressor(bagging_fraction=0.6, bagging_freq=6, boosting_type='gbdt',
-               class_weight=None, colsample_bytree=1.0, device='gpu',
-               feature_fraction=0.8, importance_type='split', learning_rate=0.05,
-               max_depth=-1, min_child_samples=16, min_child_weight=0.001,
-               min_split_gain=0.3, n_estimators=120, n_jobs=-1, num_leaves=150,
-               objective=None, random_state=2021, reg_alpha=1e-06, reg_lambda=10,
-               silent='warn', subsample=1.0, subsample_for_bin=200000,
-               subsample_freq=0)
+lgbm_model = LGBMRegressor()
 lgbm_model.fit(X_train,y_train)
 
 lgbm_model.score(X_train,y_train)
 
 from interpret.glassbox import ExplainableBoostingRegressor
-ebm_model = ExplainableBoostingRegressor(max_leaves= 2,outer_bags = 10,interactions=8)
+ebm_model = ExplainableBoostingRegressor()
 ebm_model.fit(X_train, y_train)
 
 import pickle

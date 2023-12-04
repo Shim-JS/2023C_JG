@@ -388,7 +388,7 @@ with tab3:
         model_svm = joblib.load('model/svm_model.pkl')
         model_ebm = joblib.load('model/ebm_model.pkl')
         model_lgbm = joblib.load('model/lgbm_model.pkl')
-        model_lr = joblib.load('model/lr_model.pkl')
+        model_lr = joblib.load('model/lgbm_model.pkl')
         model_rf = joblib.load('model/svm_model.pkl')
 
         model_num = 0
