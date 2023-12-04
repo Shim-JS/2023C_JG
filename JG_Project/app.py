@@ -386,10 +386,10 @@ with tab3:
         st.subheader(f"1. 모델 선택")
         ## 모델 로드 5가지
         model_svm = joblib.load('model/svm_model.pkl')
-        model_ebm = joblib.load('model/dt_model.pkl')
-        model_lgbm = joblib.load('model/rf_model.pkl')
+        model_ebm = joblib.load('model/ebm_model.pkl')
+        model_lgbm = joblib.load('model/lgbm_model.pkl')
         model_lr = joblib.load('model/lr_model.pkl')
-        model_rf = joblib.load('model/rf_model.pkl')
+        model_rf = joblib.load('model/svm_model.pkl')
 
         model_num = 0
         model_list2 = [model_lr, model_lgbm, model_rf, model_ebm, model_svm]
